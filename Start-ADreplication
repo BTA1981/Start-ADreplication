@@ -1,0 +1,14 @@
+Function Start-ADReplication {
+     param (
+        [Parameter(Mandatory=$True, # Folder to be modified
+                   ValueFromPipeline=$True,
+                   ValueFromPipelineByPropertyName=$True)]
+        [string]$TenantDC    
+    )    
+    $DCs = (Get-ADForest -server $TenantDC).Domains | ForEach-Object{ Get-ADDomainController -Filter * -Server $_ } | select HostName
+    foreach ($DC in $DCs)
+        {
+          #  Write-Host "Processing $DC" -for Cyan
+            repadmin /syncall $DC.HostName
+        }
+} # End Start-ADReplication
